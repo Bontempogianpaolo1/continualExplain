@@ -33,6 +33,6 @@ python compute_statistics.py
 
 # How to start experiments
 
-python main.py changing default parameters
+python main.py
 
 
