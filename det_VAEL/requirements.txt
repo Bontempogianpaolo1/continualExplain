@@ -1,0 +1,14 @@
+numpy
+pandas
+Path
+Pillow
+problog
+matplotlib
+seaborn
+PySDD
+scikit-learn
+scikit-image
+scipy
+torch
+torchvision
+tqdm
