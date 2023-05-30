@@ -14,7 +14,7 @@ download data folder from [here](https://drive.google.com/file/d/1RCcjG4FAT3Y5iD
 
 
 # How to prepare data
-download from [Here](http://www.vision.caltech.edu/visipedia/CUB-200.html)
+download from [Here](http://www.vision.caltech.edu/datasets/cub_200_2011/)
 Then run data_processing.py
 
 unzip data.zip

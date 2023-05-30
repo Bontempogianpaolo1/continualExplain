@@ -15,21 +15,24 @@ from typing import Tuple
 from datasets.transforms.denormalization import DeNormalize
 import torch.optim
 
-class TCIFAR100(CIFAR100):
+
+class TCUB200(CIFAR100):
     def __init__(self, root, train=True, transform=None,
                  target_transform=None, download=False) -> None:
         self.root = root
         super(TCIFAR100, self).__init__(root, train, transform, target_transform, download=not self._check_integrity())
 
-class MyCIFAR100(CIFAR100):
+
+class MyCUB200(CIFAR100):
     """
     Overrides the CIFAR100 dataset to change the getitem function.
     """
+
     def __init__(self, root, train=True, transform=None,
                  target_transform=None, download=False) -> None:
         self.not_aug_transform = transforms.Compose([transforms.ToTensor()])
         self.root = root
-        super(MyCIFAR100, self).__init__(root, train, transform, target_transform, not self._check_integrity())
+        super(MyCUB200, self).__init__(root, train, transform, target_transform, not self._check_integrity())
 
     def __getitem__(self, index: int) -> Tuple[type(Image), int, type(Image)]:
         """
@@ -58,21 +61,20 @@ class MyCIFAR100(CIFAR100):
 
 
 class SequentialCIFAR100(ContinualDataset):
-
     NAME = 'seq-cifar100'
     SETTING = 'class-il'
     N_CLASSES_PER_TASK = 10
     N_TASKS = 10
     TRANSFORM = transforms.Compose(
-            [transforms.RandomCrop(32, padding=4),
-             transforms.RandomHorizontalFlip(),
-             transforms.ToTensor(),
-             transforms.Normalize((0.5071, 0.4867, 0.4408),
-                                  (0.2675, 0.2565, 0.2761))])
+        [transforms.RandomCrop(32, padding=4),
+         transforms.RandomHorizontalFlip(),
+         transforms.ToTensor(),
+         transforms.Normalize((0.5071, 0.4867, 0.4408),
+                              (0.2675, 0.2565, 0.2761))])
 
     def get_examples_number(self):
         train_dataset = MyCIFAR100(base_path() + 'CIFAR10', train=True,
-                                  download=True)
+                                   download=True)
         return len(train_dataset.data)
 
     def get_data_loaders(self):
@@ -82,16 +84,16 @@ class SequentialCIFAR100(ContinualDataset):
             [transforms.ToTensor(), self.get_normalization_transform()])
 
         train_dataset = MyCIFAR100(base_path() + 'CIFAR100', train=True,
-                                  download=True, transform=transform)
+                                   download=True, transform=transform)
         if self.args.validation:
             train_dataset, test_dataset = get_train_val(train_dataset,
-                                                    test_transform, self.NAME)
+                                                        test_transform, self.NAME)
         else:
-            test_dataset = TCIFAR100(base_path() + 'CIFAR100',train=False,
-                                   download=True, transform=test_transform)
+            test_dataset = TCIFAR100(base_path() + 'CIFAR100', train=False,
+                                     download=True, transform=test_transform)
 
         train, test = store_masked_loaders(train_dataset, test_dataset, self)
-        
+
         return train, test
 
     @staticmethod
@@ -135,7 +137,8 @@ class SequentialCIFAR100(ContinualDataset):
 
     @staticmethod
     def get_scheduler(model, args) -> torch.optim.lr_scheduler:
-        model.opt = torch.optim.SGD(model.net.parameters(), lr=args.lr, weight_decay=args.optim_wd, momentum=args.optim_mom)
+        model.opt = torch.optim.SGD(model.net.parameters(), lr=args.lr, weight_decay=args.optim_wd,
+                                    momentum=args.optim_mom)
         scheduler = torch.optim.lr_scheduler.MultiStepLR(model.opt, [35, 45], gamma=0.1, verbose=False)
         return scheduler
 
